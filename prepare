@@ -15,8 +15,8 @@ DEST=/tmp/$NAME
 
 cleanExit () {
 	dirs -c > /dev/null
-	if [ -f "/tmp/$DEST" ]; then
-		rm -Rf /tmp/$DEST
+	if [ -f "$DEST" ]; then
+		rm -Rf $DEST
 	fi
 	exit $1
 }
