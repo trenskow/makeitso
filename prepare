@@ -41,7 +41,7 @@ if [ -f "bower.json" ]; then
 		cleanExit 1
 	fi
 fi
-if grep -q test package.json; then 
+if grep -q \"test\" package.json; then 
 	if npm test; then
 		echo "npm test success."
 	else
@@ -51,7 +51,7 @@ if grep -q test package.json; then
 else
 	echo "No test script."
 fi
-if grep -q postdeploy package.json; then
+if grep -q \"postdeploy\" package.json; then
 	if npm run postdeploy; then
 		echo "postdeploy success."
 	else
