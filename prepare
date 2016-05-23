@@ -26,22 +26,25 @@ git --work-tree=$DEST checkout -f
 
 pushd $DEST > /dev/null
 if [ -f "package.json" ]; then
-	npm install
-	if [ $? -ne 0 ]; then
+	if npm install; then
+		echo "npm install success."
+	else
 		echo "npm install failed."
 		cleanExit 1
 	fi
 fi
 if [ -f "bower.json" ]; then
-	bower install
-	if [ $? -ne 0 ]; then
+	if bower install; then
+		echo "bower install success."
+	else
 		echo "bower install failed."
 		cleanExit 1
 	fi
 fi
 if grep -q test package.json; then 
-	npm test
-	if [ $? -ne 0 ]; then
+	if npm test; then
+		echo "npm test success."
+	else
 		echo "npm test failed."
 		cleanExit 1
 	fi
@@ -49,8 +52,9 @@ else
 	echo "No test script."
 fi
 if grep -q postdeploy package.json; then
-	npm run postdeploy
-	if [ $? -ne 0 ]; then
+	if npm run postdeploy; then
+		echo "postdeploy success."
+	else
 		echo "postdeploy failed."
 		cleanExit 1
 	fi
