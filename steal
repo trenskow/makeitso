@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ $# -eq 1 ]; then
+	echo "Usage: steal [user] [name]"
+	exit 1
+fi
+
+USER=$1
+NAME=$2
+SRC=/tmp/$NAME
+
+if [ ! -d "$SRC" ]; then
+	echo "$SRC does not exist."
+fi
+
+chown -R $USER:$USER $SRC

@@ -1,0 +1,60 @@
+#!/bin/bash
+
+if [ `whoami` != "git" ]; then
+	echo "Only user git can prepare."
+	exit 1
+fi
+
+if [ $# -eq 0 ]; then
+	echo "Usage: prepare [name]"
+	exit 1
+fi
+
+NAME=$1
+DEST=/tmp/$NAME
+
+cleanExit () {
+	dirs -c > /dev/null
+	if [ -f "/tmp/$DEST" ]; then
+		rm -Rf /tmp/$DEST
+	fi
+	exit $1
+}
+
+mkdir -p $DEST
+git --work-tree=$DEST checkout -f
+
+pushd $DEST > /dev/null
+if [ -f "package.json" ]; then
+	npm install
+	if [ $? -ne 0 ]; then
+		echo "npm install failed."
+		cleanExit 1
+	fi
+fi
+if [ -f "bower.json" ]; then
+	bower install
+	if [ $? -ne 0 ]; then
+		echo "bower install failed."
+		cleanExit 1
+	fi
+fi
+if grep -q test package.json; then 
+	npm test
+	if [ $? -ne 0 ]; then
+		echo "npm test failed."
+		cleanExit 1
+	fi
+else
+	echo "No test script."
+fi
+if grep -q postdeploy package.json; then
+	npm run postdeploy
+	if [ $? -ne 0 ]; then
+		echo "postdeploy failed."
+		cleanExit 1
+	fi
+else
+	echo "No postdeploy script."
+fi
+popd > /dev/null

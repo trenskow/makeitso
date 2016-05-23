@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+	echo "Usage: deploy [name]"
+	exit 1
+fi
+
+NAME=$1
+SRC="/tmp/$NAME"
+DEST="/var/node/$NAME"
+
+if [ ! -d "$SRC" ]; then
+	echo "$NAME not prepared for deploy ($SRC does not exist)"
+	exit 1
+fi
+
+USER=`whoami`
+sudo /usr/local/bin/steal $USER $NAME
+
+if [ -d "$DEST" ]; then
+	mv $DEST $DEST.old
+fi
+
+mv $SRC $DEST
+
+if [ -d "$DEST.old" ]; then
+	rm -Rf $DEST.old
+fi
+
+sudo supervisorctl restart $NAME:*
+if [ $? -ne 0 ]; then
+	echo "deploy failed"
+	exit 1
+fi
